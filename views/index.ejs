@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>face-detection-node-opencv</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <script>
+  
+//MODIFY THIS TO THE APPROPRIATE URL IF IT IS NOT BEING RUN LOCALLY
+
+  var adminPage = angular.module("test",[]);
+  adminPage.controller('test1', function($scope,$http){
+
+	var canvas = document.getElementById('canvas-video');
+  	var context = canvas.getContext('2d');
+  	var img = new Image();
+
+  	// show loading notice
+  	context.fillStyle = '#333';
+  	context.fillText('Loading...', canvas.width/2-30, canvas.height/3);
+	
+  	var socket = io.connect('http://localhost:3000');
+  	socket.on('frame', function (data) {
+  	  var uint8Arr = new Uint8Array(data.buffer);
+  	  var str = String.fromCharCode.apply(null, uint8Arr);
+  	  var base64String = btoa(str);
+	  img.onload = function () {
+  	    context.drawImage(this, 0, 0, canvas.width, canvas.height);
+  	  };
+  	  img.src = 'data:image/png;base64,' + base64String;
+  	});
+
+  });
+
+  
+  
+  
+  
+  </script>
+</head>
+<body ng-app="test" ng-controller="test1">
+  <div class="container center">
+    <canvas id="canvas-video" width="640" height="480"></canvas>
+  </div>
+</body>
+</html>
